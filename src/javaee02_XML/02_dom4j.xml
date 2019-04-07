@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<stus>
+	<stu>
+		<name>刘钟</name>
+		<age>31</age>
+		<address>佛山</address>
+	</stu>
+	<stu>
+		<name>刘双平</name>
+		<age>29</age>
+		<address>广州</address>
+	</stu>
+</stus>
+
+<!--
+	先导入Dom4j的jar包
+		D:\Installation Package\MyEclipse2017\项目所需导入MyEclipse的jar包\dom4j\dom4j-1.6.1\dom4j-1.6.1.jar
+
+	XML的常用两种解析(读取)方式（面试）
+		DOM (Document Object Model 文档对象模型)	
+			把整个xml文件结构全部读取到内存中，形成树状结构；	
+			整个文档称之为document对象，属性对应为attribute对象、所有节点对应为element对象、节点中的文字对应为Text对象；
+			以上所有对象都可以成为node节点；
+			
+			优点：文档比较小，就会比较快读取； 另外可以对文档进行增删的操作
+			缺点：xml特别大，就会造成内存溢出(内存不够)
+				
+		SAX (simple API for Xml 基于事件驱动)
+			读取一行解析一行，上面是整个读进去。
+			不会造成内存溢出，不能增删，只能查询。		
+			
+	针对以上两种解析方式，给出的解决方案
+		jaxp	早期sun公司提供的，比较繁琐
+		jdom	
+		dom4j	使用比较广泛； 参考Dom4j.java的例子
+		
+ 	Dom4j的Xpath使用
+		Dom4j支持Xpath的写法。
+		Xpath其实是xml的路径语言，它支持我们在解析xml的时候，能够快速定位到具体的某一个元素；	
+		在查找指定节点的时候，根据Xpath语法规则来查找
+		使用前需要加jar包依赖：D:\Installation Package\MyEclipse2017\jar包\dom4j\dom4j-1.6.1\lib\jaxen-1.1-beta-6.jar
+		参考Xpath.java的例子
+-->

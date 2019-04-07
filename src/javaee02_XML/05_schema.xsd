@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.heima.com/teacher" elementFormDefault="qualified">
+		
+		<element name="teachers">	<!-- 复杂元素 -->
+			<complexType>			<!-- 用于声明这个teachers元素是复杂元素 -->
+				<sequence>
+					<element name="teacher" maxOccurs="unbounded">	 <!-- 可以写多个teacher标签。unbounded无限个；1表示可以写一个 -->
+						<complexType>
+							<sequence>
+								<!-- 简单元素 -->
+								<element name="name" type="string"></element>
+								<element name="age" type="int"></element>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+			</complexType>
+		</element>
+		
+</schema>
+<!-- 
+	新建XML Schema类型文件
+		xmlns="http://www.w3.org/2001/XMLSchema"   名称空间(名称空间)，指定W3C来约束05_schema.xsd(然后05_schema.xsd来约束05_schema.xml)
+		targetNamespace="http://www.heima.com/teacher"   目标名称空间。下面定义的那些元素都与这个名称空间绑定上。
+		elementFormDefault="qualified"	                               元素的格式化情况
+ 
+ 	W3C ~~ .xsd ~~ .xml
+-->

@@ -1,0 +1,173 @@
+这里是所有JSP知识点的总结
+	具体的笔记去WebRoot/javaee05_jsp目录下；另外temp包里面的类是辅助作用，给WebRoot文件夹下的JSP调用的一些JavaBean
+
+什么是JSP
+	HTML多数情况下是静态固定写死的，我们需要动态地展现；		
+	例如根据不同的学生名查询出不同的学生信息展示在同一个页面模板上；
+	HTML里面不能写java代码，jsp里面可以写；
+
+JSP工作原理
+  1)Web容器根据客户端访问的资源类别（Web容器会根据资源的第一行代码确定），
+    	如果你访问的是JSP资源，就交由JSP引擎处理；
+    	如果你访问的是Servlet资源，就交由Servlet引擎处理;
+  2)翻译：
+  		如果是JSP资源，JSP引擎会将其翻译成Servlet资源(继承了HttpJspBase的servlet类，HttpJspBase等价于HttpServlet)，传入相关的对象；
+  		在tomcat中的work文件夹(临时)中可以看到，翻译成了date_jsp.java,本质上它是一个servlet；跟jsp比较才发现，jsp真是简化好多；
+  		如果是静态资源，以out.write()形式输出，如果是动态资源，以out.print()形式输出；
+  3)编译：
+  		此时JSP引擎在翻译正确后，将其输出给Servlet引擎，当作Servlet处理。
+  		JSP -- HttpJspBase.java(实现了servlet接口，跟HttpServlet一样) -- class(有链接请求就找它)
+  4)不重复编译：
+  		如果再次访问同一个jsp文件，翻译工作依然进行，Servlet引擎工作可以减化，所以这是为会么第N次较第1次快的原因；
+  		第一次访问的时候需要翻译，然后交给servlet引擎解析，找什么init方法什么service方法的，然后再放到实例池；这些都要消耗时间的；
+  		第二次访问的时候，翻译还是得继续，但是servlet池里面已经有了，那什么解析，初始化，放实例池等操作就剩了~
+
+JSP语法 
+  1)JSP模版元素 
+		模版元素就是HTML中的静态内容，即<body>,<table>,<form>标签。。。
+	
+  2)JSP表达式		<%=  %>	
+	       语法：<%="字符串变量或表达式"%>
+	       结束无分号	  
+	       默认输出到浏览器
+        
+  3)JSP脚本片断 		<%   %>
+		语法：<% ...java代码; %>
+		脚本片断中的注释符号与java代码一致
+        	注意：JSP修改后，无需重新部署，直接刷新，Web容器会自动比较新旧二个版本的JSP
+		多个JSP脚本片断中定义的变量，本质是_jspService()方法中的局部变量，可以访问	
+			_jspService()是系统翻译后的servlet里相当于service()的方法，可以去work看到
+			
+  4)JSP声明			<%!  %>
+		语法：<%! ...java代码 %>
+		看work里的源代码，它是定义在servlet类下的东西，而<% %>里的东西都是在servlet类下的service()里
+		JSP声明的变量或方法，会成为Servlet的实例变量或实例方法或普通方法
+		JSP脚本片断中不能定义局部方法，方法只能定义在JSP声明中
+        
+  5)JSP注释			<%-- --%>
+		语法：<%-- 注释的内容 --%>
+		对于HTML注释来说，JSP引擎会将其翻译成servlet内容，
+		对于JSP注释来说，JSP引擎不会将其翻译成servlet内容
+		注释不能嵌套使用
+
+
+JSP指令
+	告诉JSP引擎如何处理JSP页面中除了显示输出外的其余部分。指令是程序员控制JSP引擎做什么的依据;
+	JSP指令（directive）是为JSP引擎而设计的，它们并不直接产生任何可见输出;
+
+	JSP三大指令
+		@page   		JSP第一行
+		@include		静态导入其他JSP文件进入本JSP文件，合并之后统一翻译成一个servlet；
+		@tablib			引入JSTL标签库
+	
+	
+JSP九大内置对象(面试)
+	就是我们可以直接在jsp页面中使用到这些对象，不用创建
+
+    1)request(域对象)
+    	request.getParameter("numClient")
+    	request.getRequestDispatcher("10_session_result.jsp").forward(request,response);
+			
+    2)response
+    	response.getWriter().write("用户名：" + username);
+    	response.sendRedirect("/CZBK_WEB/jsp/03_NeiZhiObject/10_session_result.jsp");
+    	
+    3)session(域对象)
+    	在转发和重定向情况下，session域不会销毁;因为还是在一次访问中嘛，浏览器没关咯~
+		访问jsp页面时，默认web服务器创建session;（page指令的session="true"默认服务器创建session属性）  
+		前面学习访问servlet时，必须通过request.getSession()才能创建session
+		session.setAttribute("name","杰克");
+		
+    4)application(域对象)
+		其实就是ServletContext域对象	
+		application.setAttribute("name","jack");
+		String name = (String)application.getAttribute("name");
+		application.removeAttribute("name");
+		
+    5)config(少用)
+		取得jsp在web.xml文件中的映射信息；其实就是ServletConfig
+		config.getInitParameter("email")
+		
+    6)exception(少用)
+		该对象只能在<%@isErroPage="true"%>的情况下，容器才会自动创建，否则容器不予创建
+		<%=exception.getMessage()%>
+		
+    7)out
+		out的类型是JspWriter，它是一个具有缓存功能的PrintWriter对象
+		out.write("后");		把out对象输出的内容放到response缓冲区；先输出response本身要输出的内容，然后才是out内容；（面试）
+		response.getWriter().write("先");
+		
+    8)pageContext(域对象)： 表示Jsp行运过程中的环境对象
+      	a)能够取得其它8个内置对象
+      		pageContext.getRequest()、pageContext.getOut()
+      	b)具有转发和包含的功能 
+      		pageContext.forward("/jsp/03_NeiZhiObject/13_out.jsp")
+      	c)域对象
+			PageContext域对象仅限于当前jsp页面中，出了该jsp页面，原PageContext域对象销毁，如果取不到值，返回null
+	    	PageContext域对象可以将对应的值从指定的四个域对象之一取出和设置
+	    		pageContext.setAttribute("name", "xixi",pageContext.SESSION_SCOPE);
+				pageContext.getAttribute("name",PageContext.APPLICATION_SCOPE) 
+	      	PageContext.findAttribute("name")
+				它会以name为key，依次(page、request、session、aplication)去四个域对象中查询对应的值，找到即止，如果找不到，返回null
+			
+    9)page(少用)
+    	就是这个jsp翻译成java类的实例对象
+    
+	其中有四个是作用域对象；  
+		pageContext		PageContext			当前页面
+		request			HttpServletRequest	一次请求，服务器做出了相应就不存在了
+		session			HttpSession			一次会话（多次请求与相应）
+		application		ServletContext		被整个项目共享，服务器关闭了就不行了
+		[pageContext<request<session<application]
+	主要作用于对象的存和取
+		request.setAttribute("name","session")  
+	    session.getAttribute("pass")
+
+
+JSP的标签	
+	作用：取代<%%>的写法，使JSP页面美化，即JSP页面都是由标签组成，不再有其它的内容；
+	jsp:include							动态包含其他JSP页面；各自生成自己的Servlet
+	jsp:forward / jsp:param				转向指定JSP页面，可以带上参数
+	jsp:useBean / jsp:setProperty		取到或者是生成指定JavaBean的实例对象，放入指定作用域，并能给各个属性赋值；
+
+	
+JSTL标准标签库
+	作用: 简化jsp的代码编写，用各种标签替换写法<%%>；  
+		   例如if、for、String name="liuzhong"等以前都是写在<%%>，现在用标签都能表达出来
+	使用: 和EL搭配使用，EL表达式主要就是从各个域里取到值来显示，JSTL做流程判断循环等控制
+	步骤: 1.	D:\Installation Package\MyEclipse2017\jar包\jstl\jakarta-taglibs-standard-1.1.2\lib\两个jar包
+			jstl.jsp、standard.jar直接放到web-inf下的lib，不用像java放jar包还要build path一下；
+		  2.引入标签库 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+		    uri=""里面 alt+/ 会弹出选项，选择core结尾的这个，核心标签库；prefix="c"是因为core是以c开头，取其他名字也行；
+			如果想支持EL表达式，那么引入的标签库必须选择1.1版本，1.0的不支持，这个版本在选择core的时候旁边可以看到
+	
+	常用的标签（其他的没必要看了）：
+		c:set
+		c:if
+		c:forEach
+ 	所有标签底层都是一个处理类；导入的standard.jar包下的c.tld，各个标签的作用参数等都用英文解释了；好像有帮助文档；
+ 	
+ 	
+EL表达式
+	作用
+	   	简化jsp代码，具体简化的是jsp里面写的java代码;   
+		一般就是从四个域里面取到值显示；其他判断、遍历之类的工作给JSTL
+	11个内置对象
+		pageContext				可取到pageContext的实例，除了它其他内置对象都是Map类型		${pageContext.request.contextPath}
+		pageScope				可取到page作用域里的数据					${pageScope.username}
+		requestScope			可取到request作用域里的数据				${request.username}
+		sessionScop				可取到session作用域里的数据				${session.username}
+		applicationScope		可取到application作用域里的数据			${application.username}
+		header					可取到请求头对象里的信息：				${header['User-Agent']}
+		hearderValues			可取到请求头对象里的信息(多个)：			${headerValues['Accept-Encoding'][0]}
+		param					可取到GET请求带过来的参数：				${param.name}、${param.pass}
+		params					可取到GET请求带过来的参数(存在多个值)：	${paramValues.like[0]}
+		cookie					可取到cookie：							${cookie.username.name}
+		initParam				可取到全局初始化参数(web.xml里定义的):	${initParam.webName}
+	内置对象(隐式对象)就是可以在EL表达式里直接拿来用的对象; 不要跟JSP的内置对象混淆，知道四个作用域的就行；
+	
+	
+新建jsp文件注意
+	MyEclipse新建的jsp文件的头部可能不是pageEncoding="UTF-8"
+	设置让它以后每次新建都是UTF-8:	首选项--搜索jsp--编码选择UTF-8
+  

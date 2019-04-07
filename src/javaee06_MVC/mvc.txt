@@ -1,0 +1,43 @@
+早期JavaBean+JSP的开发模式：   
+	JavaBean：数据的封装，就是个java类。
+	jsp里面直接写java代码：封装数据、执行业务；
+	jsp页面代码很多，维护代码麻烦。
+	
+
+Servlet+JavaBean+JSP：一种MVC模式
+	model		模型层	JavaBean	封装数据，数据处理
+	view		视图层	Jsp			专注于显示
+	controller	控制层	Servlet		接收页面的请求，到模型层去处理，然后相应数据出去。
+	对于大型项目：分层，逻辑比较清楚，便于维护，扩展方便。
+	对于小型项目：严格遵守MVC，可能比较麻烦，代码稍多。
+	
+三层结构
+	客户端		
+	Web层				Servlet/Jsp 
+	业务逻辑层			EJB、会话bean、JavaBean		
+	数据访问层(持久层)	Dao
+	
+学生管理系统
+	1.	先建数据库
+		create database stus;
+		use stus;
+		create table stu(
+			id 		int 		  primary key	auto_increment,
+			sname 	varchar(20),
+			gender  varchar(5),
+			phone   varchar(20),
+			birthday DATE,
+			hobby	varchar(50),
+			info    varchar(200)
+		);
+		
+	2.	新建动态web工程
+		
+		
+	
+	全部查询
+	更新功能
+	添加功能
+						
+
+	

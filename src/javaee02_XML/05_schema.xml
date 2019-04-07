@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<teachers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		  xmlns="http://www.heima.com/teacher" 
+		  xsi:schemaLocation="http://www.heima.com/teacher 05_schema.xsd" > 
+		  
+	<teacher>
+		<name>zhangsan</name>
+		<age>19</age>
+	</teacher>
+
+	<teacher>
+		<name>zhangsan</name>
+		<age>19</age>
+	</teacher>
+	
+</teachers>
+
+<!--  
+	在<teachers>里alt+/会弹出提示
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	
+			标记这个xml文件是个实例文档
+		xmlns="http://www.heima.com/teacher" 	
+			名称空间，必须跟05_schema.xsd文件里面的那个targetNamespace="http://www.heima.com/teacher"一致
+		xsi:schemaLocation="http://www.heima.com/teacher 05_schema.xsd"
+			xsi:schemaLocation="{namespace} {location}"   namespace就是上面的名称空间，location约束文档的路径，这里是同一级目录里
+			
+			
+			
+	一个xml可以引用多个schema约束，但只能引用一个DTD约束
+		名称空间的作用就是在写元素的时候，可以指定该元素使用的是哪一套约束规则。
+		
+		引入多个命名空间，分别命名为aa、bb
+			xmlns:aa="http://www.heima.com/teacher" 
+			xmlns:bb="http://www.heima.com/teacher" 
+		那在下面的元素上就可以这样写
+			<bb:name>lisa</name>    指定这个元素是用的哪个名称空间的约束
+		正常情况只引入了一套，就不需要用别名
+ -->

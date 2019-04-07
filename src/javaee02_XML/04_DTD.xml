@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE root SYSTEM "04_DTD.dtd">			<!-- dtd文件的名字一般跟要约束的xml的名字一样 -->
+
+<root>
+	<student>
+		<name>张三</name>
+		<age>30</age>
+	</student>
+	<student>
+		<name>李四</name>
+		<age>31</age>
+	</student>
+</root>
+
+<!-- 
+	检查约束：	
+		浏览器会对XML和DTD进行语法的检测，不会检测XML是否符合DTD规则；
+ -->

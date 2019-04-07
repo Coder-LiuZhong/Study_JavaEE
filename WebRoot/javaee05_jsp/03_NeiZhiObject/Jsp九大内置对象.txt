@@ -1,0 +1,63 @@
+jsp九大隐式/内置对象(面试)
+	就是我们可以直接在jsp页面中使用到这些对象，不用创建
+
+	翻译之后给servlet传递的对象如下：
+    1)request(域对象)
+    	request.getParameter("numClient")
+    	request.getRequestDispatcher("10_session_result.jsp").forward(request,response);
+			
+    2)response
+    	response.getWriter().write("用户名：" + username);
+    	response.sendRedirect("/CZBK_WEB/jsp/03_NeiZhiObject/10_session_result.jsp");
+    	
+    3)session(域对象)
+    	在转发和重定向情况下，session域不会销毁;因为还是在一次访问中嘛，浏览器没关咯~
+		访问jsp页面时，默认web服务器创建session;（page指令的session="true"默认服务器创建session属性）  
+		前面学习访问servlet时，必须通过request.getSession()才能创建session
+		session.setAttribute("name","杰克");
+		
+    4)application(域对象)
+		其实就是ServletContext域对象	
+		application.setAttribute("name","jack");
+		String name = (String)application.getAttribute("name");
+		application.removeAttribute("name");
+		
+    5)config(少用)
+		取得jsp在web.xml文件中的映射信息；其实就是ServletConfig
+		config.getInitParameter("email")
+		
+    6)exception(少用)
+		该对象只能在<%@isErroPage="true"%>的情况下，容器才会自动创建，否则容器不予创建
+		<%=exception.getMessage()%>
+		
+    7)out
+		out的类型是JspWriter，它是一个具有缓存功能的PrintWriter对象
+		out.write("后");		把out对象输出的内容放到response缓冲区；先输出response本身要输出的内容，然后才是out内容；（面试）
+		response.getWriter().write("先");
+		
+    8)pageContext(域对象)： 表示Jsp行运过程中的环境对象
+      	a)能够取得其它8个内置对象
+      		pageContext.getRequest()、pageContext.getOut()
+      	b)具有转发和包含的功能 
+      		pageContext.forward("/jsp/03_NeiZhiObject/13_out.jsp")
+      	c)域对象
+			PageContext域对象仅限于当前jsp页面中，出了该jsp页面，原PageContext域对象销毁，如果取不到值，返回null
+	    	PageContext域对象可以将对应的值从指定的四个域对象之一取出和设置
+	    		pageContext.setAttribute("name", "xixi",pageContext.SESSION_SCOPE);
+				pageContext.getAttribute("name",PageContext.APPLICATION_SCOPE) 
+	      	PageContext.findAttribute("name")
+				它会以name为key，依次(page、request、session、aplication)去四个域对象中查询对应的值，找到即止，如果找不到，返回null
+			
+    9)page(少用)
+    	就是这个jsp翻译成java类的实例对象
+    
+    
+其中有四个是作用域对象；  
+	pageContext		PageContext			当前页面
+	request			HttpServletRequest	一次请求，服务器做出了相应就不存在了
+	session			HttpSession			一次会话（多次请求与相应）
+	application		ServletContext		被整个项目共享，服务器关闭了就不行了
+	[pageContext<request<session<application]
+作用于对象的存和取
+	request.setAttribute("name","session")  
+    session.getAttribute("pass")
