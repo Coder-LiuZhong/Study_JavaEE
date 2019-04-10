@@ -18,7 +18,6 @@ Transaction
 		conn.commit();
 		conn.rollback();
 
-
 事务特点 (面试)
 	四个ACID
 	原子性：事务中包含的逻辑不可分割。原子是物理中的最小单位，不可分割。

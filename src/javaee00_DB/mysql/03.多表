@@ -1,0 +1,66 @@
+外键约束
+	表之间的关系，需要外键来约束
+	    例如product产品表里面的cno类别编号字段，对应的是category类别表里面的cid编号字段
+	    如果product表中插入一条数据，它的cno字段值设置为XX，但是XX在category表的cid字段里面并不存在；
+	    这样的数据就不符合预期的要求，这个数据就没什么意义。所以我们要给product表加一个外键来约束这两个表的这种关系。
+
+	alter table product add foreign key(cno) references category(cid);       
+		--添加外键约束；给"产品"表设置一个外键cno指向"类别"表的cid字段；references参照的意思；
+
+	create table orders(
+	     ...
+	     uno int,
+	     foreign key(uno) references user(uid)   --  外键一般都是指向另外一张表的主键
+	);
+
+	delete from category where cid=5;      -- 想删除category表cid=5的数据，须先在product表删除cno=5的数据，不然p表中的数据没意义了，报错；
+
+	SET FOREIGN_KEY_CHECKS = 0;			   -- 修改之后再把约束改回1即可
+     		如果已经设置好外键，这两个关联字段的值在设置外键之前就先设置好了，想改，那就要先disable约束  
+		     		
+-------------------------------------------------------------------------------------------------------------------------------------
+多表之间建表原则
+	一对多:	一个用户对应多个订单；   
+			建表原则：在"多"的一方添加一个外键，指向"一"的一方的主键；
+	多对多： 学生老师；   
+			建表原则：将多对多拆分成一对多的关系；
+					   建立一张中间表，它至少要有两个外键，这两个外键分别指向原来的那张表；   
+					   建立一个有学号、老师编号两个字段的中间表；
+	一对一： 班级班长(用的不是很多)
+			建表原则：将一对一的情况，当作是一对多情况处理，在任意一张表中添加一个外键，并且这个外键要唯一指向另外一张表；
+	                                或者直接将两张表合并成一张表；
+	                                或者将两张表的主键建立起连接，让两张表里面主键相等
+			拆表操作：相亲网站个人信息，姓名性别等都是常用的，年收入特长等不适常用的，那就可以将常用和不常用的信息分作两个表存储，减少表的臃肿；
+
+
+	订单项(中间表，跟两个表都是一对多关系)：ono、pno、总数、总价
+	create table orderitem(
+	      ono int,
+	      pno int,
+	      foreign key(ono) references orders(oid),
+	      foreign key(pno) references product(pid), 
+	      ocount int,
+	      subsum double
+	  );
+--------------------------------------------------------------------------------
+交叉查询
+	select * from product,category;        
+		-- 没有意义；查出两张表的乘积；笛卡尔积；			   
+	select * from product,category where cno=cid;      
+		-- 过滤出有意义的数据，查出的其实是交集； 
+		     隐式内链接：在查询出来的结果的基础上去做的WHERE条件过滤
+	select * from product p inner join category c on p.cno=c.cid;         
+		-- 显示内链接：带着条件去查询结果，执行效率要高；
+	select * from product p left outer join category c on p.cno=c.cid;    
+		-- 左外连接，会将左表中的所有数据都查询出来，如果右表中没有对应的数据，用null代替；
+	select * from product p right outer join category c on p.cno=c.cid;   
+		-- 右外连接，会将右表中的所有数据都查询出来，如果左表中没有对应的数据，用null代替；
+
+
+分页查询
+	select * from product limit 0,10;    -- 第一个是数据的起始索引，从0开始；显示10条；
+
+
+子查询
+	select * from product where cno=(select cid from category where cname='手机数码');
+	select pname,(select cname from category c where p.cno=c.cid) as 商品分类名称 from product p;
