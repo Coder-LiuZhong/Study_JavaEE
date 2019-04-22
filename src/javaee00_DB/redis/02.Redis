@@ -1,0 +1,55 @@
+Redis
+	C语言写的  高性能的   开源的   键值数据类型；
+		实施性比较强的软件一般都是C写的，嵌入式开发一般都是C和C++，搞不定才用点汇编，它太麻烦。
+	直接操作内存的开源的高性能数据库软件，同时有个子线程不断地把内存里面的数据往硬盘里面刷入，不然断电，内存数据就没有了
+	
+	应用场景：
+		缓存、聊天室的在线好友列表、任务队列（秒杀、抢票）、网站访问统计、应用排行榜（直播观看人数）；
+	       新浪微博，知乎网都在用；速率每秒11w读，8w1写；
+
+安装
+	安装包是以源码形式提供的
+	.c文件；需要将它编译为.o文件；所以需要先安装gcc才能编译，编译后的文件安装在Linux上；
+	
+	安装包有windows版本的redis_win.zip，直接解压开就可以直接用；
+	redis-3.0.7.tar.gz是Linux环境安装的；
+		安装包传到服务端Linux系统的/root/下，进入cd /root/目录下解压tar -zxvf redis-3.0.7.tar.gz；
+		先要安装gcc，就是在Linux里面运行Redis的依赖命令yum install gcc-c++；
+		然后进入解压后的文件夹cd /root/redis-3.0.7		
+		再输入make命令就编译所有.c文件了； （没有装gcc，编译将出现错误提示。如果安装失败，必须删除文件夹，重新解压；）
+	
+	创建一个文件夹作为redis的安装目录： /usr/local/redis
+	进入安装包目录cd /root/redis-3.0.7，执行安装命令并指定安装路径make PREFIX=/usr/local/redis install；		
+	成功之后 /usr/local/redis会有一bin目录，里面有六个文件；
+	redis启动需要一个配置文件，所以，复制一个文件过去：cp  /root/redis-3.0.7/redis.conf   /usr/local/redis/
+
+启动
+	前端模式启动：
+		直接/usr/local/redis/bin/redis-server启动；    
+		出现个启动的图案，但是启动后不能输Linux命令了，ctrl+c中断； 不推荐
+	后端模式启动：
+		先修改配置文件，cd /usr/local/redis  --  打开配置文件：vim  ./redis.conf ；	将里面的deamonize no 改为deamonize no
+		启动服务端：  ./bin/redis-server     ./redis.conf
+		开放端口：	/sbin/iptables -I INPUT -p tcp --dport 6379 -j ACCEPT		redis的默认端口是6379
+		  			/etc/rc.d/init.d/iptables save	保存
+		  			/etc/init.d/iptables status	  	查看
+		   			ps -ef | grep -i redis		       查看服务；有两个，上面出现那个6379就确实是启动了；下面那个就是现在正在执行的命令
+		启动客户端	./bin/redis-cli				直接操作的是内存，数据库要慢半拍；
+	测试安装成功
+		客户端输入ping返回pong
+		set name tom	      get name	     del name     	get name
+		keys  *(redis里面所有键的名字都拿到)
+--------------------------------------------------------------------------------
+Keys的通用操作
+	keys *     			// 所有key的查看
+	keys my?   			// my开头的所有key
+	del my1 my2 my3    	// 删除key
+	exists my1         	// 0 是否存在，1存在
+	get company        	// 获取key的值
+	
+	rename company newcompany   // 重命名
+	type newcompany             // key的指定类型   String、list、set、hash、zset
+	
+	expire newcompany 1000      // 设置过期的时间，单位秒
+	ttl newcompany              // 所剩的时间，没设置会返回-1
+
